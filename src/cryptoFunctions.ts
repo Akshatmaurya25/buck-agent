@@ -1,6 +1,20 @@
 import { ExecutableGameFunctionResponse, ExecutableGameFunctionStatus, GameFunction } from "@virtuals-protocol/game";
 import { yatharthwalletFunction } from "./goat/getBalance";
 
+interface CryptoError extends Error {
+  code?: string;
+  details?: string;
+}
+
+const handleError = (error: unknown): ExecutableGameFunctionResponse => {
+  const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+  console.error('Function error:', error);
+  return new ExecutableGameFunctionResponse(
+    ExecutableGameFunctionStatus.Failed,
+    `Action failed: ${errorMessage}`
+  );
+};
+
 export const transferCryptoFunction = new GameFunction({
     name: "transferCrypto",
     description: "Transfer crypto to other wallets using wallet address",
@@ -11,21 +25,21 @@ export const transferCryptoFunction = new GameFunction({
     ] as const,
     executable: async (args, logger) => {
         try {
-            logger?.(`Transfering ${args.amount}, ${args.crypto} to ${args.walletAddress}`);
-            console.log(`Transfering ${args.amount}, ${args.crypto} to ${args.walletAddress}`);
+            if (!args.walletAddress || !args.amount || !args.crypto) {
+                throw new Error("All parameters are required");
+            }
+            logger?.(`Transferring ${args.amount} ${args.crypto} to ${args.walletAddress}`);
+            
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
-                "Action completed successfully"
-
+                "Transfer completed successfully"
             );
-        } catch (e) {
-            return new ExecutableGameFunctionResponse(
-                ExecutableGameFunctionStatus.Failed,
-                "Action failed"
-            );
+        } catch (error) {
+            return handleError(error);
         }
     },
 });
+
 export const getCryptoPriceFunction = new GameFunction({
     name: "getCryptoPrice",
     description: "Get the price of a crypto",
@@ -43,10 +57,7 @@ export const getCryptoPriceFunction = new GameFunction({
 
             );
         } catch (e) {
-            return new ExecutableGameFunctionResponse(
-                ExecutableGameFunctionStatus.Failed,
-                "Action failed"
-            );
+            return handleError(e);
         }
     },
 });
@@ -67,10 +78,7 @@ export const buyCryptoFunction = new GameFunction({
 
             );
         } catch (e) {
-            return new ExecutableGameFunctionResponse(
-                ExecutableGameFunctionStatus.Failed,
-                "Action failed"
-            );
+            return handleError(e);
         }
     },
 });
@@ -93,43 +101,33 @@ export const sellCryptoFunction = new GameFunction({
 
             );
         } catch (e) {
-            return new ExecutableGameFunctionResponse(
-                ExecutableGameFunctionStatus.Failed,
-                "Action failed"
-            );
+            return handleError(e);
         }
     },
 });
 export const getWalletBalanceFunction = new GameFunction({
     name: "getWalletBalance",
-    description: "Get the balance of a wallet",
-    args: [
-        { name: "walletAddress", type: "string", description: "The wallet address to get the balance of" }
-    ] as const,
-
-    executable: async (args, logger) => {
+    description: "Get the balance of wallet configured in environment",
+    args: [] as const,
+    executable: async (_, logger) => {
         try {
-            logger?.(`Getting the balance of ${args.walletAddress}`);
-            console.log(`Getting the balance of ${args.walletAddress}`);
-            
+            logger?.("Fetching wallet balance...");
             const result = await yatharthwalletFunction.handler();
+            console.log("Function result:", result); // Debug log
 
-            if (result.success) {
-                return new ExecutableGameFunctionResponse(
-                    ExecutableGameFunctionStatus.Done,
-                    `Balance: ${result.balance}, Address: ${result.address}`
-                );
-            } else {
-                return new ExecutableGameFunctionResponse(
-                    ExecutableGameFunctionStatus.Failed,
-                    `Error: ${result.error}`
-                );
+            if (!result.success || !result.balance) {
+                throw new Error(result.error || "Failed to fetch balance");
             }
-        } catch (e) {
+
+            const response = `Wallet Balance: ${result.balance} ETH\nAddress: ${result.address}`;
+            logger?.(response);
             return new ExecutableGameFunctionResponse(
-                ExecutableGameFunctionStatus.Failed,
-                `Action failed: ${(e as Error).message}`
+                ExecutableGameFunctionStatus.Done,
+                response
             );
+        } catch (error) {
+            console.error("Balance fetch error:", error);
+            return handleError(error);
         }
     }
 });

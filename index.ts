@@ -14,7 +14,7 @@ async function connectWallet() {
 
 async function main() {
     const wallet = await connectWallet();
-    // Continue with wallet connected
+    
 }
 
 main();
