@@ -1,4 +1,5 @@
 import { ExecutableGameFunctionResponse, ExecutableGameFunctionStatus, GameFunction } from "@virtuals-protocol/game";
+import { yatharthwalletFunction } from "./goat/getBalance";
 
 export const transferCryptoFunction = new GameFunction({
     name: "transferCrypto",
@@ -110,18 +111,25 @@ export const getWalletBalanceFunction = new GameFunction({
         try {
             logger?.(`Getting the balance of ${args.walletAddress}`);
             console.log(`Getting the balance of ${args.walletAddress}`);
-            return new ExecutableGameFunctionResponse(
-                ExecutableGameFunctionStatus.Done,
+            
+            const result = await yatharthwalletFunction.handler();
 
-
-                "Action completed successfully"
-
-            );
+            if (result.success) {
+                return new ExecutableGameFunctionResponse(
+                    ExecutableGameFunctionStatus.Done,
+                    `Balance: ${result.balance}, Address: ${result.address}`
+                );
+            } else {
+                return new ExecutableGameFunctionResponse(
+                    ExecutableGameFunctionStatus.Failed,
+                    `Error: ${result.error}`
+                );
+            }
         } catch (e) {
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Failed,
-                "Action failed"
+                `Action failed: ${(e as Error).message}`
             );
         }
-    },
+    }
 });

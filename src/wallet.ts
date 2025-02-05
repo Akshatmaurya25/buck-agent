@@ -29,9 +29,10 @@ const walletClient = createWalletClient({
                 apiKey: process.env.UNISWAP_API_KEY as string,
             }),
         ],
+
     });
 
-    // Create an agent with the worker
+
     const agent = new GameAgent(process.env.API_KEY ?? "", {
         name: "On chain actions agent",
         goal: "Swap 0.01 USDC to PEPE",
