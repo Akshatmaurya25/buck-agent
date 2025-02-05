@@ -20,7 +20,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@goat-sdk/core": "0.4.6",
+    "@goat-sdk/core": "^0.4.6",
     "@goat-sdk/plugin-erc20": "0.2.8",
     "@goat-sdk/plugin-uniswap": "0.2.9",
     "@goat-sdk/wallet-evm": "^0.2.6",
