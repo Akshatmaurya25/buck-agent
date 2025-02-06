@@ -1,6 +1,7 @@
 import { ExecutableGameFunctionResponse, ExecutableGameFunctionStatus, GameFunction } from "@virtuals-protocol/game";
 import { walletFunctions } from "./goat/getBalance";
 import { transfertokenFunction } from "./goat/transferToken";
+import { getUserBalanceGeneralFunction } from "./getBalanceGeneral/getBalanceGeneral";
 
 interface CryptoError extends Error {
   code?: string;
@@ -148,6 +149,26 @@ export const getWalletBalanceFunction = new GameFunction({
             );
         } catch (error) {
             console.error("Balance fetch error:", error);
+            return handleError(error);
+        }
+    }
+});
+
+
+export const getGeneralBalanceFunction = new GameFunction({
+    name : "getGeneralBalance",
+    description: "Get the balance of a wallet given the address of the wallet",
+    args:[] as const,
+    executable: async (_, logger) => { 
+        try {
+            logger?.("wait a second, fetching the balance of the wallet");
+            const result = await getUserBalanceGeneralFunction.handler();
+            console.log("Function result:", result); // Debug log
+            return new ExecutableGameFunctionResponse(
+                ExecutableGameFunctionStatus.Done,
+                `Balance: ${result}`
+            );
+        } catch (error) {
             return handleError(error);
         }
     }
