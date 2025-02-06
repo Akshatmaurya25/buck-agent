@@ -1,5 +1,7 @@
 import { ExecutableGameFunctionResponse, ExecutableGameFunctionStatus, GameFunction } from "@virtuals-protocol/game";
-import { yatharthwalletFunction } from "./goat/getBalance";
+import { walletFunctions } from "./goat/getBalance";
+import { transfertokenFunction } from "./goat/transferToken";
+import { getUserBalanceGeneralFunction } from "./getBalanceGeneral/getBalanceGeneral";
 
 interface CryptoError extends Error {
   code?: string;
@@ -20,7 +22,7 @@ export const transferCryptoFunction = new GameFunction({
     description: "Transfer crypto to other wallets using wallet address",
     args: [
         { name: "walletAddress", type: "string", description: "The wallet address to transfer the crypto to" },
-        { name: "amount", type: "number", description: "The amount of crypto to transfer" },
+        { name: "amount", type: "string", description: "The amount of crypto to transfer" },
         { name: "crypto", type: "string", description: "The crypto to transfer" },
     ] as const,
     executable: async (args, logger) => {
@@ -28,8 +30,28 @@ export const transferCryptoFunction = new GameFunction({
             if (!args.walletAddress || !args.amount || !args.crypto) {
                 throw new Error("All parameters are required");
             }
-            logger?.(`Transferring ${args.amount} ${args.crypto} to ${args.walletAddress}`);
-            
+             // Ensure wallet address starts with '0x'
+        if (!args.walletAddress.startsWith("0x")) {
+            throw new Error("Invalid wallet address format. Must start with '0x'.");
+        }
+        const parsedAmount = parseFloat(args.amount);
+        if (isNaN(parsedAmount) || parsedAmount <= 0) {
+            throw new Error("Amount must be a valid number greater than 0");
+        }
+
+        logger?.(`Transferring ${parsedAmount} ${args.crypto} to ${args.walletAddress}`);
+        console.log?.(`Transferring ${args.amount} ${args.crypto} to ${args.walletAddress}`);
+        const decimals = 6;
+        // Convert to string first to handle decimal places properly
+        const scaledAmountNumber =  Math.pow(10, decimals) *parsedAmount  ;
+        // Then round and convert to BigInt      
+        const scaledAmount = BigInt(Math.round(scaledAmountNumber));
+
+    
+    
+        const formattedAddress = args.walletAddress as `0x${string}`;
+            const result = await transfertokenFunction.handler(formattedAddress, scaledAmount);
+            console.log("Function result:", result); // Debug log
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
                 "Transfer completed successfully"
@@ -112,7 +134,7 @@ export const getWalletBalanceFunction = new GameFunction({
     executable: async (_, logger) => {
         try {
             logger?.("Fetching wallet balance...");
-            const result = await yatharthwalletFunction.handler();
+            const result = await walletFunctions.handler();
             console.log("Function result:", result); // Debug log
 
             if (!result.success || !result.balance) {
@@ -127,6 +149,26 @@ export const getWalletBalanceFunction = new GameFunction({
             );
         } catch (error) {
             console.error("Balance fetch error:", error);
+            return handleError(error);
+        }
+    }
+});
+
+
+export const getGeneralBalanceFunction = new GameFunction({
+    name : "getGeneralBalance",
+    description: "Get the balance of a wallet given the address of the wallet",
+    args:[] as const,
+    executable: async (_, logger) => { 
+        try {
+            logger?.("wait a second, fetching the balance of the wallet");
+            const result = await getUserBalanceGeneralFunction.handler();
+            console.log("Function result:", result); // Debug log
+            return new ExecutableGameFunctionResponse(
+                ExecutableGameFunctionStatus.Done,
+                `Balance: ${result}`
+            );
+        } catch (error) {
             return handleError(error);
         }
     }

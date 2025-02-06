@@ -55,6 +55,27 @@ export class WalletAdapter {
             throw error;
         }
     }
+    async transferToken(to :`0x${string}`, amount:bigint) {
+        try {
+            
+     
+        const hash = await this.walletClient.sendTransaction({
+            account: this.account, 
+            to,
+            value: amount,
+          })
+          console.log("Transaction url:", `https://basescan.org/tx/${hash}`);
+          return {
+            success: true,
+            hash: hash,
+            address: this.account.address
+        };   } catch (error) {
+            console.error("Error transferring token:", error);
+            console.error("Error transferring token - account:", to);
+            throw error;
+            
+        }
+    }
 }
 
 export const walletAdapter = new WalletAdapter();

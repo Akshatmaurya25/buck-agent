@@ -11,7 +11,7 @@ interface WalletResponse {
   error?: string;
 }
 
-export const yatharthwalletFunction = {
+export const walletFunctions = {
   name: "getWalletBalance",
   description: "Get the current wallet balance",
   parameters: {},
@@ -40,4 +40,4 @@ export const yatharthwalletFunction = {
   }
 };
 
-export const functions = [yatharthwalletFunction];
+export const functions = [walletFunctions];
