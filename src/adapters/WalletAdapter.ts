@@ -2,6 +2,7 @@ import { createPublicClient, createWalletClient, http, formatEther } from "viem"
 import { privateKeyToAccount } from "viem/accounts";
 import { base } from "viem/chains";
 import dotenv from 'dotenv';
+import CurrencyConverter from '../utils/rateconversion';
 
 dotenv.config();
 
@@ -41,9 +42,9 @@ export class WalletAdapter {
                 address: this.account.address,
             });
             
-            const formattedBalance = formatEther(balance);
-            console.log("Raw balance:", balance.toString());
-            console.log("Formatted balance:", formattedBalance);
+            // Convert balance to multiple currencies
+            const converted = await CurrencyConverter.convertETHToMultipleCurrencies(balance);
+            const formattedBalance = CurrencyConverter.formatCurrencyResponse(converted);
             
             return {
                 success: true,

@@ -135,13 +135,17 @@ export const getWalletBalanceFunction = new GameFunction({
         try {
             logger?.("Fetching wallet balance...");
             const result = await walletFunctions.handler();
-            console.log("Function result:", result); // Debug log
-
+            
             if (!result.success || !result.balance) {
                 throw new Error(result.error || "Failed to fetch balance");
             }
 
-            const response = `Wallet Balance: ${result.balance} ETH\nAddress: ${result.address}`;
+            const response = `Wallet Balance:\n` +
+                `${result.balance.eth}\n` +
+                `${result.balance.usdc}\n` +
+                `${result.balance.inr}\n` +
+                `Address: ${result.address}`;
+                
             logger?.(response);
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
