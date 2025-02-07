@@ -5,6 +5,9 @@ import Layout from '../../layout';
 import ChatInterface from '../../chat-interface';
 import Modal from '../../Model';
 
+// import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+
 export default function Page() {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
 
@@ -24,6 +27,7 @@ export default function Page() {
               className="bg-[#3C2322] text-[#F1E9E9] px-4 py-2 rounded hover:bg-[#2E2E2E] transition duration-300 "
             >
               Connect Wallet
+              {/* <ConnectButton /> */}
             </button>
           </div>
         </Modal>
