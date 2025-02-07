@@ -4,6 +4,8 @@ import {
     ExecutableGameFunctionStatus,
 } from "@virtuals-protocol/game";
 import { getMindShare, searchTwitter } from "../api/apifunctions";
+import { state } from "../..";
+import { number } from "zod";
 type AgentData = {
     agentName: string;
     contracts: any[]; // Replace 'any' with the actual contract type if known
@@ -27,6 +29,21 @@ type AgentData = {
     smartFollowersCount: number;
     topTweets: any[]; // Replace 'any' with a more specific type if available
 };
+interface TweetData {
+    authorUsername: string;
+    createdAt: string;
+    engagementsCount: number;
+    impressionsCount: number;
+    isQuote: boolean;
+    isReply: boolean;
+    likesCount: number;
+    quotesCount: number;
+    repliesCount: number;
+    retweetsCount: number;
+    smartEngagementPoints: number;
+    text: string;
+    matchingScore: number;
+  }
 
 export const MindshareFunction = new GameFunction({
     name: "MindshareFunction",
@@ -43,13 +60,19 @@ export const MindshareFunction = new GameFunction({
             if (interval !== 7 && interval !== 3) {
                 throw new Error("Interval must be 7 or 3 days");
             }
-
+            
             const result = await getMindShare(interval, size);
+            console.log("Mindshare function ", result )
             console.log(
                 `The top ${size} mindshare accounts in the last ${interval} days are: ${result
                     .map((acc: AgentData) => `${acc.agentName} (${acc.mindshare})`)
                     .join(", ")}`
             );
+           
+            state.responseString =    `The top ${size} mindshare accounts in the last ${interval} days are: ${result
+                    .map((acc: AgentData, index:number) => ` \n${index+1}. ${acc.agentName} with mindshare (${acc.mindshare.toFixed(2)})`)
+                    .join(", ")}`
+           
             
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
@@ -80,6 +103,13 @@ export const SearchTweet = new GameFunction({
             console.log("Searching twitter")
             const query = args.query  ;;
             const result = await searchTwitter(query);
+            state.responseString = `Top Twitter results from the search:\n ${result
+                .map((tweet:TweetData, index:number) => `\n${index + 1}. @${tweet.authorUsername} (${new Date(tweet.createdAt).toLocaleDateString()})
+                   "${tweet.text}"
+                   • ${tweet.likesCount} likes • ${tweet.retweetsCount} retweets • ${tweet.repliesCount} replies
+                   • Engagement: ${tweet.engagementsCount} • Impressions: ${tweet.impressionsCount}
+                   • Matching Score: ${tweet.matchingScore.toFixed(2)}`)
+                .join("")}`
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
                 "Action completed successfully"

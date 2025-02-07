@@ -10,11 +10,12 @@ import Image from "next/image";
 import logo from "./logo.png";
 interface Message {
   role: "agent" | "user";
-  content: string | React.ReactNode;
+  content: string;
   timestamp: string;
 }
 import runagent from "../src/index";
 import axios from "axios";
+import { copyToClipboard } from "./lib/utils";
 export const outerMessage: Message[] = [];
 export let sendMessageGlobal: ((message: string) => void) | null = null;
 
@@ -24,19 +25,9 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "agent",
-      content: "Hello, I am a generative AI agent. How may I assist you today?",
-      timestamp: "4:08:28 PM",
-    },
-    {
-      role: "user",
-      content: "Hi, I'd like to check my bill.",
-      timestamp: "4:08:37 PM",
-    },
-    {
-      role: "agent",
       content:
-        "Please hold for a second.\n\nOk, I can help you with that\n\nI'm pulling up your current bill information\n\nYour current bill is $150, and it is due on August 31, 2024.\n\nIf you need more details, feel free to ask!",
-      timestamp: "4:08:37 PM",
+        "Hello, I am a Buck Terminal. Connect your wallet and let's get started",
+      timestamp: "4:08:28 PM",
     },
   ]);
 
@@ -73,14 +64,14 @@ export default function ChatInterface() {
     console.log(outerMessage);
   }, [messages]);
   const handleSend = (message: string) => {
-    sendMessage(message);
+    sendMessage(message, "user");
     executeTask(message);
     setloading(true);
   };
   return (
     <div className="flex-1 flex flex-col bg-[#141414] overflow-auto text-[#F1E9E9]">
-      <ScrollArea className="flex-1 max-h-full  p-4">
-        <div className="space-y-4  overflow-y">
+      <ScrollArea className="flex-1 flex flex-col max-h-full  p-4">
+        <div className="space-y-4 flex flex-col overflow-y">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -122,6 +113,7 @@ export default function ChatInterface() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-[#F1E9E9] hover:bg-[#2E2E2E]"
+                      onClick={() => copyToClipboard(message.content)}
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -149,29 +141,21 @@ export default function ChatInterface() {
                   </div>
                 )}
               </div>
-              {loading && (
-                <>
-                  <div className="rounded-full h-fit overflow-hidden">
-                    <Image src={logo} width={30} className="" alt="" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">Buck</span>
-                    <span className="text-sm text-[#F1E9E9]">
-                      {message.timestamp}
-                    </span>
-                  </div>
-                  <div
-                    className={cn(
-                      "p-3 rounded-lg",
-                      message.role === "user" ? "bg-[#2E2E2E]" : "bg-[#3C2322]"
-                    )}
-                  >
-                    <p className="text-sm whitespace-pre-wrap">Loading</p>
-                  </div>
-                </>
-              )}
             </div>
           ))}
+          {/* {loading && (
+            <>
+              <div className="rounded-full h-fit max-w-[80%] overflow-hidden">
+                <Image src={logo} width={30} className="" alt="" />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Buck</span>
+              </div>
+              <div className={cn("p-3 rounded-lg", "bg-[#3C2322]")}>
+                <p className="text-sm whitespace-pre-wrap">Loading</p>
+              </div>
+            </>
+          )} */}
         </div>
       </ScrollArea>
       <div className="p-4 border-t border-[#3C2322]">

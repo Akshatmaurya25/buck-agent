@@ -17,8 +17,8 @@ export const getMindShare = async (interval: 7|3 = 7, size  : number = 1) => {
            
         });
 
-        console.log(res.data.ok );
-        return res.data;  
+    
+        return res.data.ok.data;  
     } catch (error) {
         console.error("Error fetching mind share:", error);
         throw error;
@@ -42,8 +42,8 @@ export const searchTwitter = async (query:string) => {
            
         });
 
-        console.log(res.data );
-        return res.data;  
+        console.log(res.data.ok  );
+        return res.data.ok;  
     } catch (error) {
         console.error("Error fetching mind share:", error);
         throw error;

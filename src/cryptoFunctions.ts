@@ -50,7 +50,9 @@ export const transferCryptoFunction = new GameFunction({
     
         const formattedAddress = args.walletAddress as `0x${string}`;
             const result = await transfertokenFunction.handler(formattedAddress, decimalToBigInt(args.amount));
-            console.log("Function result:", result); // Debug log
+            console.log("Function result:", result); 
+            // Debug log
+               state.responseString = `Transfered to ${result.address}. Checkout transaction hash ${result.hash}, you can check it on https://basescan.org/tx/${result.hash} `
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
                 "Transfer completed successfully"
@@ -89,6 +91,7 @@ export const transferSEI = new GameFunction({
     
         const formattedAddress = args.walletAddress as `0x${string}`;
             const result = await walletAdapterSEI.transferTokenSEI(formattedAddress, decimalToBigInt(args.amount));
+              state.responseString = `Transfered to ${result.address}. Checkout transaction hash ${result.hash}, you can check it on https://seitrace.com/tx/${result.hash}?chain=atlantic-2 `
             console.log("Function result:", result); // Debug log
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
@@ -111,6 +114,7 @@ export const getCryptoPriceFunction = new GameFunction({
         try {
             logger?.(`Getting the price of ${args.crypto} in ${args.currency}`);
             console.log(`Getting the price of ${args.crypto} in ${args.currency}`);
+
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
                 "Action completed successfully"
@@ -184,7 +188,7 @@ export const getWalletBalanceFunction = new GameFunction({
               
                 `Address: ${result.address}`;
                 
-
+   state.responseString = `Balance for your wallet ${result.address} : ${result.balance}  `
             // const response = `Wallet Balance:\n` +
             //     `${result.balance.eth}\n` +
             //     `${result.balance.usdc}\n` +
@@ -232,7 +236,7 @@ export const getSeiWalletBalance = new GameFunction({
             const result = await walletAdapterSEI.getBalance();
             console.log("SEI wallet:", result); // Debug log
             logger?.("sei balance set")
-            state.responseString = `Balance for your wallet ${result.address} : ${result.balance} SEI `;
+            state.responseString = `Balance for your SEI wallet with address ${result.address} : ${result.balance} SEI `;
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
                 `Balance: ${result}`,

@@ -7,7 +7,7 @@ dotenv.config();
 
 interface WalletResponse {
   success: boolean;
-  balance?: string;
+  hash?: string;
   address?: string;
   error?: string;
 }
@@ -41,7 +41,7 @@ export const transfertokenFunction = {
 
       return {
         success: true,
-        balance: transfer.hash,
+        hash: transfer.hash,
         address: transfer.address,
       };
     } catch (error) {
