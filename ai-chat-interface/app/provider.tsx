@@ -1,19 +1,17 @@
 "use client"
 
-// import Sofa from "@/sofa";
-// import Page from "../page"
-import Component from "@/app/landing-page"
-
 import '@rainbow-me/rainbowkit/styles.css';
 import {
   getDefaultConfig,
   RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
-import { WagmiProvider } from 'wagmi';
+import { WagmiConfig, createClient } from 'wagmi';
 import {
   mainnet,
+  polygon,
+  optimism,
+  arbitrum,
   base,
-  sei,
 } from 'wagmi/chains';
 import {
   QueryClientProvider,
@@ -22,27 +20,21 @@ import {
 
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
-  projectId:'cc7548b1e3c2739cec64c6295b58cd50',
-  chains: [mainnet, base,sei],
+  projectId: 'cc7548b1e3c2739cec64c6295b58cd50',
+  chains: [mainnet, polygon, optimism, arbitrum, base],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 
 const queryClient = new QueryClient();
 
-export default function SyntheticV0PageForDeployment() {
+export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiProvider config={config}>
+    <WagmiConfig client={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          {/* Your App */}
-          <div>
-            {/* <Page /> */}
-            <Component />
-            {/* <Sofa /> */}
-          </div>
-      
+          {children}
         </RainbowKitProvider>
       </QueryClientProvider>
-    </WagmiProvider>
-    
-)}
+    </WagmiConfig>
+  );
+}

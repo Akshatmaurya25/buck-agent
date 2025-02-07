@@ -1,4 +1,4 @@
-import readline from 'readline';
+
 import { createPublicClient, formatEther, http } from "viem";
 import { base } from "viem/chains";
 import dotenv from 'dotenv';

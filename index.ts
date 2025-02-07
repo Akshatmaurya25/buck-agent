@@ -8,7 +8,7 @@ async function connectWallet() {
         return wallet;
     } catch (error) {
         console.error('Error connecting wallet:', error);
-        throw error;
+   
     }
 }
 
