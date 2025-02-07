@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import { useState } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -9,13 +9,16 @@ import { cn } from "@/lib/utils"
 
 interface Message {
   role: "agent" | "user"
-  content: string
+  content: string | React.ReactNode
   timestamp: string
 }
 
+export const outerMessage: Message[] = []
+export let sendMessageGlobal: ((message: string) => void) | null = null
+
 export default function ChatInterface() {
   const [input, setInput] = useState("")
-  const [messages] = useState<Message[]>([
+  const [messages, setMessages] = useState<Message[]>([
     {
       role: "agent",
       content: "Hello, I am a generative AI agent. How may I assist you today?",
@@ -32,6 +35,24 @@ export default function ChatInterface() {
       timestamp: "4:08:37 PM"
     }
   ])
+
+  const sendMessage = (message: string) => {
+    if (!message.trim()) return
+    const newMessage: Message = {
+      role: "user",
+      content: message,
+      timestamp: new Date().toLocaleTimeString()
+    }
+    setMessages((prevMessages) => [...prevMessages, newMessage])
+    setInput("")
+  }
+
+  useEffect(() => {
+    sendMessageGlobal = sendMessage // Assign sendMessage function globally
+    outerMessage.length = 0
+    outerMessage.push(...messages)
+    console.log(outerMessage)
+  }, [messages])
 
   return (
     <div className="flex-1 flex flex-col bg-[#141414] text-[#F1E9E9]">
@@ -92,7 +113,12 @@ export default function ChatInterface() {
             onChange={(e) => setInput(e.target.value)}
             className="min-h-[44px] max-h-32 bg-[#2E2E2E] text-[#F1E9E9] border-[#3C2322]"
           />
-          <Button className="px-8 bg-[#3C2322] text-[#F1E9E9] hover:bg-[#2E2E2E]">Send</Button>
+          <Button
+            className="px-8 bg-[#3C2322] text-[#F1E9E9] hover:bg-[#2E2E2E]"
+            onClick={() => sendMessage(input)}
+          >
+            Send
+          </Button>
         </div>
       </div>
     </div>
