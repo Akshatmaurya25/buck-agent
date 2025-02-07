@@ -1,9 +1,11 @@
+import {  state } from './index';
 import { ExecutableGameFunctionResponse, ExecutableGameFunctionStatus, GameFunction } from "@virtuals-protocol/game";
 import { walletFunctions } from "./goat/getBalance";
 import { transfertokenFunction } from "./goat/transfertoken";
 import { getUserBalanceGeneralFunction } from "./getBalanceGeneral/getBalanceGeneral";
 import { walletAdapterSEI } from "./adapters/WalletAdapterSei";
 import { decimalToBigInt } from "./utils/BigIntDecimalConversions";
+import { resetErrorsCount } from "ajv/dist/compile/errors";
 
 interface CryptoError extends Error {
   code?: string;
@@ -130,6 +132,7 @@ export const buyCryptoFunction = new GameFunction({
         try {
             logger?.(`Buying ${args.amount} of ${args.crypto}`);
             console.log(`Buying ${args.amount} of ${args.crypto}`);
+           
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
                 "Action completed successfully"
@@ -228,10 +231,14 @@ export const getSeiWalletBalance = new GameFunction({
             console.log?.("wait a second, fetching the balance of the SEI wallet");
             const result = await walletAdapterSEI.getBalance();
             console.log("SEI wallet:", result); // Debug log
+            logger?.("sei balance set")
+            state.responseString = `Balance for your wallet ${result.address} : ${result.balance} SEI `;
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
-                `Balance: ${result}`
+                `Balance: ${result}`,
+            
             );
+          
         } catch (error) {
             return handleError(error);
         }

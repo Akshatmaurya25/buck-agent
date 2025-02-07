@@ -14,6 +14,7 @@ interface Message {
   timestamp: string;
 }
 import runagent from "../src/index";
+import axios from "axios";
 export const outerMessage: Message[] = [];
 export let sendMessageGlobal: ((message: string) => void) | null = null;
 
@@ -51,18 +52,15 @@ export default function ChatInterface() {
 
   const executeTask = async (task: string) => {
     try {
-      const response = await fetch("/api", {
-        method: "POST",
+      const response = await axios.post("/api", task, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(task),
       });
-
-      if (!response.ok) throw new Error("Failed to add game");
-
-      // Refresh the games list
-      console.log(response);
+      if (response.data.success) {
+        sendMessage(response.data.data, "agent");
+      }
+      console.log("Response:", response);
     } catch (err) {
       console.error("Error", err);
     }

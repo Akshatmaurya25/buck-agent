@@ -1,5 +1,19 @@
+
 import { buck } from "./agent";
 
+
+
+const state = {
+    _responseString: '',
+    get responseString() {
+        return this._responseString;
+    },
+    set responseString(value: string) {
+        this._responseString = value;
+    }
+};
+
+export { state };
 
 async function runagent(task:string) {
     try {
@@ -12,8 +26,9 @@ async function runagent(task:string) {
         console.log("Agent initialized. Enter your task (type 'exit' to quit):");
         const worker = buck.getWorkerById("crypto_worker");
         try {
-                        await worker.runTask(task, { verbose: true });
-                        console.log("Task completed.");
+                      await worker.runTask(task, { verbose: true });
+                       return state.responseString;
+                    
                     } catch (error) {
                         console.error("Error executing task:", error);
                     }
@@ -40,6 +55,7 @@ async function runagent(task:string) {
         //     console.log("\nEnter another task (or type 'exit' to quit):");
         // });
 
+    
     } catch (error) {
         console.error("Error running agent:", error);
     }

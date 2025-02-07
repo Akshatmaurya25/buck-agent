@@ -7,11 +7,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
   const response = await runagent(body)
-    console.log()
-    return NextResponse.json(
-      { message: 'Data added successfully', data: response },
-      { status: 201 }
-    )
+    console.log("resbody",response)
+    return NextResponse.json({
+      message: 'Data added successfully',
+      data: response,
+      success:true
+    })
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to add data' },
