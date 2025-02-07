@@ -1,4 +1,4 @@
-# Buck Terminal: The Ultimate On-Chain AI Agnet on SEI Network
+# 🦆 Buck Terminal: The Ultimate On-Chain AI Agnet on SEI Network 🦆
 
 ## **Simplifying Token Creation w/- Buck Terminal on SEI**
 
