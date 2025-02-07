@@ -1,7 +1,9 @@
 import { ExecutableGameFunctionResponse, ExecutableGameFunctionStatus, GameFunction } from "@virtuals-protocol/game";
 import { walletFunctions } from "./goat/getBalance";
-import { transfertokenFunction } from "./goat/transferToken";
+import { transfertokenFunction } from "./goat/transfertoken";
 import { getUserBalanceGeneralFunction } from "./getBalanceGeneral/getBalanceGeneral";
+import { walletAdapterSEI } from "./adapters/WalletAdapterSei";
+import { decimalToBigInt } from "./utils/BigIntDecimalConversions";
 
 interface CryptoError extends Error {
   code?: string;
@@ -41,16 +43,50 @@ export const transferCryptoFunction = new GameFunction({
 
         logger?.(`Transferring ${parsedAmount} ${args.crypto} to ${args.walletAddress}`);
         console.log?.(`Transferring ${args.amount} ${args.crypto} to ${args.walletAddress}`);
-        const decimals = 6;
-        // Convert to string first to handle decimal places properly
-        const scaledAmountNumber =  Math.pow(10, decimals) *parsedAmount  ;
-        // Then round and convert to BigInt      
-        const scaledAmount = BigInt(Math.round(scaledAmountNumber));
 
     
     
         const formattedAddress = args.walletAddress as `0x${string}`;
-            const result = await transfertokenFunction.handler(formattedAddress, scaledAmount);
+            const result = await transfertokenFunction.handler(formattedAddress, decimalToBigInt(args.amount));
+            console.log("Function result:", result); // Debug log
+            return new ExecutableGameFunctionResponse(
+                ExecutableGameFunctionStatus.Done,
+                "Transfer completed successfully"
+            );
+        } catch (error) {
+            return handleError(error);
+        }
+    },
+});
+export const transferSEI = new GameFunction({
+    name: "transferSEI",
+    description: "Transfer SEI to other wallets using wallet address",
+    args: [
+        { name: "walletAddress", type: "string", description: "The wallet address to transfer the crypto to" },
+        { name: "amount", type: "string", description: "The amount of crypto to transfer" },
+     
+    ] as const,
+    executable: async (args, logger) => {
+        try {
+            if (!args.walletAddress || !args.amount) {
+                throw new Error("All parameters are required");
+            }
+             // Ensure wallet address starts with '0x'
+        if (!args.walletAddress.startsWith("0x")) {
+            throw new Error("Invalid wallet address format. Must start with '0x'.");
+        }
+        const parsedAmount = parseFloat(args.amount);
+        if (isNaN(parsedAmount) || parsedAmount <= 0) {
+            throw new Error("Amount must be a valid number greater than 0");
+        }
+
+        logger?.(`Transferring ${parsedAmount} SEI to ${args.walletAddress}`);
+        console.log?.(`Transferring ${args.amount} SEI to ${args.walletAddress}`);
+
+    
+    
+        const formattedAddress = args.walletAddress as `0x${string}`;
+            const result = await walletAdapterSEI.transferTokenSEI(formattedAddress, decimalToBigInt(args.amount));
             console.log("Function result:", result); // Debug log
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
@@ -135,13 +171,23 @@ export const getWalletBalanceFunction = new GameFunction({
         try {
             logger?.("Fetching wallet balance...");
             const result = await walletFunctions.handler();
-            console.log("Function result:", result); // Debug log
-
+            
             if (!result.success || !result.balance) {
                 throw new Error(result.error || "Failed to fetch balance");
             }
 
-            const response = `Wallet Balance: ${result.balance} ETH\nAddress: ${result.address}`;
+            const response = `Wallet Balance:\n` +
+                `${result.balance}\n` +
+              
+                `Address: ${result.address}`;
+                
+
+            // const response = `Wallet Balance:\n` +
+            //     `${result.balance.eth}\n` +
+            //     `${result.balance.usdc}\n` +
+            //     `${result.balance.inr}\n` +
+            //     `Address: ${result.address}`;
+                
             logger?.(response);
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
@@ -164,6 +210,24 @@ export const getGeneralBalanceFunction = new GameFunction({
             logger?.("wait a second, fetching the balance of the wallet");
             const result = await getUserBalanceGeneralFunction.handler();
             console.log("Function result:", result); // Debug log
+            return new ExecutableGameFunctionResponse(
+                ExecutableGameFunctionStatus.Done,
+                `Balance: ${result}`
+            );
+        } catch (error) {
+            return handleError(error);
+        }
+    }
+});
+export const getSeiWalletBalance = new GameFunction({
+    name : "getSeiWalletBalance",
+    description: "Get the balance of user SEI wallet ",
+    args:[] as const,
+    executable: async (_, logger) => { 
+        try {
+            console.log?.("wait a second, fetching the balance of the SEI wallet");
+            const result = await walletAdapterSEI.getBalance();
+            console.log("SEI wallet:", result); // Debug log
             return new ExecutableGameFunctionResponse(
                 ExecutableGameFunctionStatus.Done,
                 `Balance: ${result}`
