@@ -41,12 +41,12 @@ export default function ChatInterface() {
             <div
               key={index}
               className={cn(
-                "flex gap-2 max-w-[80%]",
-                message.role === "user" && "ml-auto"
+              "flex gap-2 max-w-[80%]",
+              message.role === "user" ? "ml-auto justify-end mr-7" : "justify-start"
               )}
             >
               {message.role === "agent" && (
-                <div className="h-8 w-8 rounded-full bg-primary flex-shrink-0" />
+              <div className="h-8 w-8 rounded-full bg-primary flex-shrink-0" />
               )}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
@@ -57,7 +57,10 @@ export default function ChatInterface() {
                     {message.timestamp}
                   </span>
                 </div>
-                <div className="p-3 bg-muted/50 rounded-lg">
+                <div className={cn(
+                  "p-3 rounded-lg",
+                  message.role === "user" ? "bg-primary/10" : "bg-muted/50"
+                )}>
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                 </div>
                 {message.role === "agent" && (
