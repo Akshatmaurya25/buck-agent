@@ -34,7 +34,7 @@ export default function ChatInterface() {
   ])
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col bg-[#141414] text-[#F1E9E9]">
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((message, index) => (
@@ -46,35 +46,35 @@ export default function ChatInterface() {
               )}
             >
               {message.role === "agent" && (
-              <div className="h-8 w-8 rounded-full bg-primary flex-shrink-0" />
+              <div className="h-8 w-8 rounded-full bg-[#3C2322] flex-shrink-0" />
               )}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">
                     {message.role === "agent" ? "GenerativeAgent" : "G5"}
                   </span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-[#F1E9E9]">
                     {message.timestamp}
                   </span>
                 </div>
                 <div className={cn(
                   "p-3 rounded-lg",
-                  message.role === "user" ? "bg-primary/10" : "bg-muted/50"
+                  message.role === "user" ? "bg-[#2E2E2E]" : "bg-[#3C2322]"
                 )}>
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                 </div>
                 {message.role === "agent" && (
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-[#F1E9E9] hover:bg-[#2E2E2E]">
                       <Copy className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-[#F1E9E9] hover:bg-[#2E2E2E]">
                       <Download className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-[#F1E9E9] hover:bg-[#2E2E2E]">
                       <ThumbsUp className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-[#F1E9E9] hover:bg-[#2E2E2E]">
                       <ThumbsDown className="h-4 w-4" />
                     </Button>
                   </div>
@@ -84,18 +84,17 @@ export default function ChatInterface() {
           ))}
         </div>
       </ScrollArea>
-      <div className="p-4 border-t">
+      <div className="p-4 border-t border-[#3C2322]">
         <div className="flex gap-2">
           <Textarea
             placeholder="Type a message as a customer"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="min-h-[44px] max-h-32"
+            className="min-h-[44px] max-h-32 bg-[#2E2E2E] text-[#F1E9E9] border-[#3C2322]"
           />
-          <Button className="px-8">Send</Button>
+          <Button className="px-8 bg-[#3C2322] text-[#F1E9E9] hover:bg-[#2E2E2E]">Send</Button>
         </div>
       </div>
     </div>
   )
 }
-
