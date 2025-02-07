@@ -17,33 +17,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <ScrollArea className="h-[calc(100vh-64px)]">
           <div className="space-y-4 p-4">
             <nav className="space-y-2">
-              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322] hover:text-[#F1E9E9]">
+              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322]">
                 <LayoutGrid className="mr-2 h-4 w-4" />
                 Tasks
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322] hover:text-[#F1E9E9]">
+              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322]">
                 <Functions className="mr-2 h-4 w-4" />
                 Functions
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322] hover:text-[#F1E9E9]">
+              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322]">
                 <Layers className="mr-2 h-4 w-4" />
                 Integrations
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322] hover:text-[#F1E9E9]">
+              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322]">
                 <Users className="mr-2 h-4 w-4" />
                 Users
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322] hover:text-[#F1E9E9]">
+              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322]">
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
               </Button>
             </nav>
             <div className="pt-4 border-t border-[#3C2322]">
-              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322] hover:text-[#F1E9E9]">
+              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322]">
                 <Eye className="mr-2 h-4 w-4" />
                 Live preview
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322] hover:text-[#F1E9E9]">
+              <Button variant="ghost" className="w-full justify-start text-[#F1E9E9] hover:bg-[#3C2322]">
                 <BarChart2 className="mr-2 h-4 w-4" />
                 Performance
               </Button>
