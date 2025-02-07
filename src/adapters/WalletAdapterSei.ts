@@ -1,8 +1,9 @@
 import { createPublicClient, createWalletClient, http, formatEther } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { base } from "viem/chains";
+import {  seiTestnet } from "viem/chains";
 import dotenv from 'dotenv';
 import CurrencyConverter from '../utils/rateconversion';
+import { bigIntToDecimal } from "../utils/BigIntDecimalConversions";
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ export class WalletAdapter {
 
     constructor() {
         const privateKey = process.env.WALLET_PRIVATE_KEY;
-        const rpcUrl = process.env.RPC_PROVIDER_URL;
+        const rpcUrl = process.env.RPC_PROVIDER_URL_SEI;
 
         if (!privateKey?.startsWith('0x')) {
             throw new Error('Invalid WALLET_PRIVATE_KEY format');
@@ -25,13 +26,13 @@ export class WalletAdapter {
         this.account = privateKeyToAccount(privateKey as `0x${string}`);
         
         this.publicClient = createPublicClient({
-            chain: base,
+            chain: seiTestnet,
             transport: http(rpcUrl)
         });
 
         this.walletClient = createWalletClient({
             account: this.account,
-            chain: base,
+            chain: seiTestnet,
             transport: http(rpcUrl)
         });
     }
@@ -42,13 +43,11 @@ export class WalletAdapter {
                 address: this.account.address,
             });
             
-            // // Convert balance to multiple currencies
-            // const converted = await CurrencyConverter.convertETHToMultipleCurrencies(balance);
-            // const formattedBalance = CurrencyConverter.formatCurrencyResponse(converted);
+         
             
             return {
                 success: true,
-                balance: balance,
+                balance: bigIntToDecimal(balance),
                 address: this.account.address
             };
         } catch (error) {
@@ -56,7 +55,7 @@ export class WalletAdapter {
             throw error;
         }
     }
-    async transferToken(to :`0x${string}`, amount:bigint) {
+    async transferTokenSEI(to :`0x${string}`, amount:bigint) {
         try {
             
      
@@ -65,7 +64,7 @@ export class WalletAdapter {
             to,
             value: amount,
           })
-          console.log("Transaction url:", `https://basescan.org/tx/${hash}`);
+          console.log("Transaction url:", `https://seitrace.com/tx/${hash}?chain=atlantic-2`);
           return {
             success: true,
             hash: hash,
@@ -79,4 +78,4 @@ export class WalletAdapter {
     }
 }
 
-export const walletAdapter = new WalletAdapter();
+export const walletAdapterSEI = new WalletAdapter();

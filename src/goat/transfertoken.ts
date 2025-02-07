@@ -1,6 +1,7 @@
 import { getOnChainTools } from "@goat-sdk/adapter-vercel-ai";
 import { walletAdapter } from "../adapters/WalletAdapter";
 import dotenv from "dotenv";
+import { WalletAdapter, walletAdapterSEI } from "../adapters/WalletAdapterSei";
 
 dotenv.config();
 
@@ -16,14 +17,23 @@ export const transfertokenFunction = {
   description: "transfer token to other wallets using wallet address",
   parameters: {},
 
-  async handler(to: `0x${string}`, amount: bigint): Promise<WalletResponse> {
+  async handler(to: `0x${string}`, amount: bigint, crypto?:string): Promise<WalletResponse> {
     try {
       if (!to.startsWith("0x")) {
         throw new Error(
           "Invalid wallet address format. It must start with '0x'."
         );
       }
-      const transfer = await walletAdapter.transferToken(to, amount);
+      let transfer;
+      if(crypto?.toLocaleLowerCase()== "sei"){
+         transfer = await walletAdapterSEI.transferTokenSEI(to, amount)
+      }
+      else{
+
+        
+        
+         transfer = await walletAdapter.transferToken(to, amount);
+      }
 
       if (!transfer.hash) {
         throw new Error("Failed to fetch balance");

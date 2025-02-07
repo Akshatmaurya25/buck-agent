@@ -5,6 +5,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { base } from "viem/chains";
 import dotenv from 'dotenv';
 import { walletAdapter, WalletAdapter } from "../adapters/WalletAdapter";
+import { bigIntToDecimal } from "../utils/BigIntDecimalConversions";
 
 
 dotenv.config();
@@ -17,7 +18,8 @@ interface FormattedBalance {
 
 interface WalletResponse {
   success: boolean;
-  balance?: FormattedBalance;
+  // balance?: FormattedBalance;
+  balance?: string;
   address?: string;
   error?: string;
 }
@@ -45,7 +47,7 @@ export const walletFunctions = {
 
           return {
               success: true,
-              balance: walletData.balance,
+              balance: bigIntToDecimal(walletData.balance),
               address: walletData.address
           };
       } catch (error) {

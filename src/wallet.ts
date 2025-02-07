@@ -1,8 +1,8 @@
-import { yatharthwalletFunction } from "./goat/getBalance";
+import { walletFunctions } from "./goat/getBalance";
 
 async function main() {
     try {
-        const result = await yatharthwalletFunction.handler();
+        const result = await walletFunctions.handler();
         
         if (result.success) {
             console.log("===============================");
