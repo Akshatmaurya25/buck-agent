@@ -1,6 +1,7 @@
 "use client";
+import * as React from "react";
+import { useState, useEffect, useRef } from "react";
 
-import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,7 +14,7 @@ interface Message {
   content: string;
   timestamp: string;
 }
-import runagent from "../src/index";
+import runagent from "./game/src/index";
 import axios from "axios";
 import { copyToClipboard } from "./lib/utils";
 export const outerMessage: Message[] = [];
@@ -21,7 +22,7 @@ export let sendMessageGlobal: ((message: string) => void) | null = null;
 
 export default function ChatInterface() {
   const [input, setInput] = useState("");
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "agent",
@@ -30,7 +31,12 @@ export default function ChatInterface() {
       timestamp: "4:08:28 PM",
     },
   ]);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  // Function to scroll to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   const sendMessage = (message: string, role?: string) => {
     if (!message.trim()) return;
     const newMessage: Message = {
@@ -39,6 +45,7 @@ export default function ChatInterface() {
       timestamp: new Date().toLocaleTimeString(),
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
+    scrollToBottom();
   };
 
   const executeTask = async (task: string) => {
@@ -50,7 +57,7 @@ export default function ChatInterface() {
       });
       if (response.data.success) {
         sendMessage(response.data.data, "agent");
-        setloading(false);
+        setLoading(false);
       }
       console.log("Response:", response);
     } catch (err) {
@@ -63,10 +70,12 @@ export default function ChatInterface() {
     outerMessage.push(...messages);
     console.log(outerMessage);
   }, [messages]);
-  const handleSend = (message: string) => {
-    sendMessage(message, "user");
-    executeTask(message);
-    setloading(true);
+  const handleSend = (input: string) => {
+    if (!input.trim()) return;
+    sendMessage(input, "user");
+    executeTask(input);
+    setInput("");
+    setLoading(true);
   };
   return (
     <div className="flex-1 flex flex-col bg-[#141414] overflow-auto text-[#F1E9E9]">
@@ -143,19 +152,41 @@ export default function ChatInterface() {
               </div>
             </div>
           ))}
-          {/* {loading && (
+          {loading && (
             <>
-              <div className="rounded-full h-fit max-w-[80%] overflow-hidden">
-                <Image src={logo} width={30} className="" alt="" />
+              <div className="flex gap-2">
+                <div className="rounded-full h-fit w-fit flex gap-2  overflow-hidden">
+                  <Image src={logo} width={30} className="" alt="" />
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-sm font-medium">Buck</span>
+                  <span className="text-xs text-yellow-400 font-medium">
+                    Wait for response
+                  </span>
+                </div>
+                <div className="flex items-center gap-2"></div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Buck</span>
-              </div>
-              <div className={cn("p-3 rounded-lg", "bg-[#3C2322]")}>
-                <p className="text-sm whitespace-pre-wrap">Loading</p>
+              <div
+                className={cn(
+                  "p-3 rounded-lg mx-9 max-w-[45%]",
+                  "bg-[#3C2322]"
+                )}
+              >
+                <p className="text-sm whitespace-pre-wrap">
+                  <div role="status" className="max-w-sm animate-pulse">
+                    <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </p>
               </div>
             </>
-          )} */}
+          )}
+          <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
       <div className="p-4 border-t border-[#3C2322]">

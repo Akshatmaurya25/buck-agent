@@ -1,6 +1,6 @@
 // app/api/route.ts
 import { NextResponse } from 'next/server'
-import runagent from '../../../src'
+import runagent from '../../game/src/index'
 
 // POST handler
 export async function POST(request: Request) {
