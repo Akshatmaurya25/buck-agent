@@ -59,6 +59,7 @@ export default function ChatInterface() {
       });
       if (response.data.success) {
         sendMessage(response.data.data, "agent");
+        setloading(false);
       }
       console.log("Response:", response);
     } catch (err) {
@@ -74,6 +75,7 @@ export default function ChatInterface() {
   const handleSend = (message: string) => {
     sendMessage(message);
     executeTask(message);
+    setloading(true);
   };
   return (
     <div className="flex-1 flex flex-col bg-[#141414] overflow-auto text-[#F1E9E9]">
