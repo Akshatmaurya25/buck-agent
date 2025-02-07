@@ -17,7 +17,9 @@ export class WalletAdapter {
         const rpcUrl = process.env.RPC_PROVIDER_URL_SEI;
 
         if (!privateKey?.startsWith('0x')) {
-            throw new Error('Invalid WALLET_PRIVATE_KEY format');
+            // throw new Error('Invalid WALLET_PRIVATE_KEY format');
+            console.error('Invalid WALLET_PRIVATE_KEY format')
+            
         }
         if (!rpcUrl) {
             throw new Error('RPC_PROVIDER_URL is required');

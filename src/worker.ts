@@ -44,7 +44,8 @@ export const cryptoWorker = new GameWorker({
           sellCryptoFunction,
            transferCryptoFunction,
             getWalletBalanceFunction,
-             getGeneralBalanceFunction],
+            
+            ],
     // Optional: Provide environment to LLP
     // getEnvironment: async () => {
 
